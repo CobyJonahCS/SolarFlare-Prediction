@@ -3,3 +3,4 @@
 *.tar.gz
 addenda/
 partition*_instances/
+xgboost.ipynb
