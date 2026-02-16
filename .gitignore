@@ -4,4 +4,4 @@
 addenda/
 partition*_instances/
 !webapp/
-!webapp/XGFeatureImportance.csv
+!webapp/XGBoost/XGFeatureImportance.csv
