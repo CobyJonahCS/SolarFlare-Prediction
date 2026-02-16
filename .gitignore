@@ -3,4 +3,5 @@
 *.tar.gz
 addenda/
 partition*_instances/
-xgboost.ipynb
+!webapp/
+!webapp/XGFeatureImportance.csv
