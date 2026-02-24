@@ -1,0 +1,251 @@
+:root{
+  --bg: #0b1020;
+  --surface: #111a2e;
+  --surface-2: #0f1730;
+  --border: rgba(255,255,255,0.08);
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.68);
+  --accent: #7dd3fc; 
+}
+
+*{ box-sizing: border-box; }
+
+html{ font-size: clamp(0.95rem, 1vw, 1rem); }
+
+body{
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: var(--text);
+  background: radial-gradient(80rem 40rem at 15% 0%, #385093 0%, transparent 55%),
+              radial-gradient(70rem 45rem at 85% 10%, #163d56 0%, transparent 60%),
+              var(--bg);
+}
+
+/* layout container */
+.container{
+  width: min(78rem, 92%);
+  margin: 0 auto;
+  padding: 1.5rem 0 3rem;
+}
+
+
+.topnav{
+  background: #0a0f1e;
+  border-bottom: 0.0625rem solid var(--border);
+  padding: 0 2rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* left title */
+.topnav::before{
+  content: "Solar Flare Dashboard";
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+/* nav links container */
+.topnav a{
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.6rem;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.topnav a.active{
+  color: var(--text);
+  background: rgba(125,211,252,0.15);
+}
+
+.topnav a:hover{
+  background: rgba(255,255,255,0.06);
+}
+
+/* intro text */
+p{ color: var(--muted); line-height: 1.45; margin: 0.5rem 0; }
+a{ color: var(--accent); }
+
+/* dashboard sections */
+.Analytics{
+  width: min(78rem, 92%);
+  margin: 0 auto;
+  padding: 1.25rem 0 3rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+
+.card{
+  background: linear-gradient(180deg, var(--surface), var(--surface-2));
+  border: 0.0625rem solid var(--border);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 1rem 2.5rem rgba(0,0,0,0.4);
+}
+
+h2{
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+/* iframes look embedded */
+iframe{
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 0.9rem;
+  background: #0a0f1e;
+}
+
+
+.imbalance-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+  gap: 1rem;
+}
+
+/* active regions pager */
+.Plot{
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+#prevBtn, #nextBtn{
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 0.0625rem solid var(--border);
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#prevBtn:hover, #nextBtn:hover{
+  background: rgba(125,211,252,0.25);
+}
+
+#prevBtn:hover, #nextBtn:hover{
+  background: rgba(255,255,255,0.10);
+}
+
+/* toggle */
+.panel.is-hidden{ display: none; }
+.toggle-btn{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-radius: 0.9rem;
+  border: 0.0625rem solid var(--border);
+  background: linear-gradient(180deg, var(--surface), var(--surface-2));
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.toggle-btn:hover{
+  background: rgba(255,255,255,0.05);
+}
+
+.dashboard{
+  display: grid;
+  gap: 1.75rem;
+}
+
+
+
+
+
+/* Collapsible Panels */
+
+.collapse{
+  margin-top: 1.25rem;
+  border-radius: 1rem;
+  border: 0.0625rem solid var(--border);
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--surface), var(--surface-2));
+}
+
+.collapse-header{
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: transparent;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.collapse-header:hover{
+  background: rgba(255,255,255,0.05);
+}
+
+.collapse-content{
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  padding: 0 1.25rem;
+}
+
+.collapse.open .collapse-content{
+  padding: 1.25rem;
+  max-height: 200rem; /* large enough to fit content */
+}
+
+.arrow{
+  transition: transform 0.25s ease;
+}
+
+.collapse.open .arrow{
+  transform: rotate(180deg);
+}
+
+
+.dataset-intro{
+  margin-bottom: 1.75rem;
+  padding: 1.25rem;
+  border-radius: 0.9rem;
+  background: rgba(255,255,255,0.04);
+  border: 0.0625rem solid var(--border);
+}
+
+.dataset-intro p{
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.dataset-meta{
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.dataset-intro a{
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.dataset-intro a:hover{
+  text-decoration: underline;
+}
