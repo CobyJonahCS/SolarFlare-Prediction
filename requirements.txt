@@ -1,4 +1,6 @@
 asttokens @ file:///home/conda/feedstock_root/build_artifacts/asttokens_1763409923949/work
+autograd==1.8.0
+autograd-gamma==0.5.0
 comm @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_comm_1753453984/work
 contourpy==1.3.3
 cycler==0.12.1
@@ -7,19 +9,27 @@ decorator @ file:///home/conda/feedstock_root/build_artifacts/decorator_17403849
 executing @ file:///home/conda/feedstock_root/build_artifacts/executing_1756729339227/work
 filelock==3.20.3
 fonttools==4.61.1
+formulaic==1.2.1
 fsspec==2026.1.0
+imbalanced-learn==0.14.1
+imblearn==0.0
+interface-meta==1.3.0
 ipykernel @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_ipykernel_1761567932/work
 ipython @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_ipython_1767621166/work
 ipython_pygments_lexers @ file:///home/conda/feedstock_root/build_artifacts/ipython_pygments_lexers_1737123620466/work
 jedi @ file:///home/conda/feedstock_root/build_artifacts/jedi_1733300866624/work
 Jinja2==3.1.6
+joblib==1.5.3
 jupyter_client @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_jupyter_client_1767954655/work
 jupyter_core @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_jupyter_core_1760643864/work
 kiwisolver==1.4.9
+lifelines==0.30.0
+lightgbm==4.6.0
 MarkupSafe==3.0.3
 matplotlib==3.10.8
 matplotlib-inline @ file:///home/conda/feedstock_root/build_artifacts/matplotlib-inline_1761214490209/work
 mpmath==1.3.0
+narwhals==2.15.0
 nest_asyncio @ file:///home/conda/feedstock_root/build_artifacts/nest-asyncio_1733325553580/work
 networkx==3.6.1
 numpy==2.4.1
@@ -53,11 +63,15 @@ pyparsing==3.3.1
 python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_python-dateutil_1751104122/work
 pytz==2025.2
 pyzmq @ file:///home/task_176237559504765/conda-bld/pyzmq_1762375608075/work
+scikit-learn==1.8.0
+scipy==1.17.0
 seaborn==0.13.2
 setuptools==80.9.0
 six @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_six_1753199211/work
+sklearn-compat==0.1.5
 stack_data @ file:///home/conda/feedstock_root/build_artifacts/stack_data_1733569443808/work
 sympy==1.14.0
+threadpoolctl==3.6.0
 torch==2.9.1
 tornado @ file:///home/task_176599247062576/croot/tornado_1765992645217/work
 tqdm==4.67.1
@@ -67,3 +81,5 @@ typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/bld/rattle
 tzdata==2025.3
 wcwidth @ file:///home/conda/feedstock_root/build_artifacts/wcwidth_1758622279606/work
 wheel==0.45.1
+wrapt==2.1.0
+xgboost==3.1.3

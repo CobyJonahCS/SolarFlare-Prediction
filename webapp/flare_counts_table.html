@@ -1,0 +1,151 @@
+<style>
+:root{
+  --bg: #0b1020;
+  --surface: #1a233a;         
+  --surface-2: #151e33;
+  --header: #96c6f5;          
+  --border: rgba(255,255,255,0.12);
+  --text: #f1f5f9;           
+  --muted: rgba(255,255,255,0.75);
+  --accent: #7dd3fc;
+}
+
+*{ box-sizing: border-box; }
+
+html{
+  font-size: clamp(0.95rem, 1vw, 1rem);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body{
+  margin: 0;
+  padding: 1rem;
+  background: transparent;
+  color: var(--text);
+}
+
+table.dataframe{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--surface), var(--surface-2));
+  border: 0.0625rem solid var(--border);
+  box-shadow: 0 1rem 2.5rem rgba(0,0,0,0.45);
+}
+
+
+table.dataframe thead th{
+  background: var(--header);
+  color: #0f172a;              
+  font-weight: 700;
+  padding: 0.9rem 1rem;
+  border-bottom: 0.0625rem solid var(--border);
+}
+
+
+table.dataframe thead tr:nth-child(2) th{
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* cells */
+table.dataframe tbody th,
+table.dataframe tbody td{
+  padding: 0.85rem 1rem;
+  border-bottom: 0.0625rem solid var(--border);
+}
+
+/* row labels */
+table.dataframe tbody th{
+  font-weight: 600;
+  text-align: left;
+}
+
+/* numeric columns centered */
+table.dataframe tbody td{
+  text-align: center;
+  font-weight: 500;
+}
+
+/* zebra with more contrast */
+table.dataframe tbody tr:nth-child(even){
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* hover with accent glow */
+table.dataframe tbody tr:hover{
+  background: rgba(125,211,252,0.15);
+  transition: background 0.15s ease;
+}
+
+/* remove bottom border on last row */
+table.dataframe tbody tr:last-child th,
+table.dataframe tbody tr:last-child td{
+  border-bottom: none;
+}
+</style>
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: center;">
+      <th>flare_category</th>
+      <th>No Flare</th>
+      <th>B</th>
+      <th>C</th>
+      <th>M</th>
+      <th>X</th>
+    </tr>
+    <tr>
+      <th>partition</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>partition1</th>
+      <td>60130</td>
+      <td>5692</td>
+      <td>6416</td>
+      <td>1089</td>
+      <td>165</td>
+    </tr>
+    <tr>
+      <th>partition2</th>
+      <td>73368</td>
+      <td>4978</td>
+      <td>8810</td>
+      <td>1329</td>
+      <td>72</td>
+    </tr>
+    <tr>
+      <th>partition3</th>
+      <td>34762</td>
+      <td>685</td>
+      <td>5639</td>
+      <td>1288</td>
+      <td>136</td>
+    </tr>
+    <tr>
+      <th>partition4</th>
+      <td>43294</td>
+      <td>846</td>
+      <td>5956</td>
+      <td>1012</td>
+      <td>153</td>
+    </tr>
+    <tr>
+      <th>partition5</th>
+      <td>62688</td>
+      <td>5924</td>
+      <td>5763</td>
+      <td>971</td>
+      <td>19</td>
+    </tr>
+  </tbody>
+</table>
