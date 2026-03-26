@@ -3,3 +3,9 @@
 *.tar.gz
 addenda/
 partition*_instances/
+savedData/
+data/
+raw/
+*.npy
+models/*pkl
+__pycache__/
