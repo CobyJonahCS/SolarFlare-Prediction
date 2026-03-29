@@ -369,3 +369,27 @@ iframe{
     flex-direction: column;
   }
 }
+
+/* CSS styling for the predictions page */
+.predictForm{
+  margin-bottom: 1.75rem;
+  padding: 1.25rem;
+  border-radius: 0.9rem;
+  background: rgba(255,255,255,0.04);
+  border: 0.0625rem solid var(--border);
+}
+
+.predictForm label{
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.predictForm button{
+  padding: 0.25rem 1rem;
+  margin: 0.25rem;
+}
+
+#result p{
+  font-size: 1.5rem;
+}
