@@ -36,7 +36,7 @@ class LSTMModel(nn.Module):
         super().__init__()
         self.lstm = nn.LSTM(input_size=6, hidden_size=24, batch_first=True, num_layers=1)
         self.dropout = nn.Dropout(0.5)
-        self.linear = nn.Linear(24, 3)
+        self.linear = nn.Linear(24, 2)
 
     def forward(self, x):
         x, _ = self.lstm(x)
@@ -243,7 +243,7 @@ def predict():
         probs = torch.softmax(output, dim=1) #Converts the logits outputted by the LSTM into probabilities
         pred = torch.argmax(probs, dim=1).item() #Chooses the class with the highest probability
 
-        probs_df = pd.DataFrame(probs, columns=["NF", "CB", "MX"], index=["Probability"]) #Create a dataframe holding probabilities of each class
+        probs_df = pd.DataFrame(probs, columns=["NF", "F"], index=["Probability"]) #Create a dataframe holding probabilities of each class
 
         #Return the prediction and a table of probabilities as HTML back to the predictions page.
         result = f"<p>Prediction: {pred}</p><div class='feature-table-wrap'>{probs_df.to_html(border=False, classes='feature-table')}</div>"
