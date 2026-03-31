@@ -3,13 +3,5 @@
 *.tar.gz
 addenda/
 partition*_instances/
-<<<<<<< HEAD
-savedData/
-data/
-raw/
-*.npy
-models/
-=======
 !webapp/
 !webapp/XGBoost/XGFeatureImportance.csv
->>>>>>> 9741a0d27ea7740c288252fbbe233179fe35cefa
