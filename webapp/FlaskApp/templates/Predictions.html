@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>Predictions</title>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+
+
+    <body>
+        <div class="topnav">
+                <a href="/">Home</a>
+                <a href="xgboost.html">XGBoost</a>
+                <a href="LSTM.html">LSTM</a>
+                <a href="minirocket.html">MiniRockets</a>
+                <a class="active" href="Predictions.html">Predictions</a>
+                <a href="APIDocs.html">API DOCS</a>
+        </div>
+
+
+
+
+        <div class="container">
+            <div class="dashboard">
+                <div class="dataset card">
+                    <h2>Predictions</h2>
+
+                    <!-- Page descriptor block -->
+                    <div class="dataset-intro">
+                        <p>
+                          Page for creating predictions with a model of your choice.
+                        </p>
+                        <p>
+                            Upload a CSV file in the form below and press the predict button to view the prediction. 
+                            The CSV file must be a 12 hour window of solar flare activity of 60 timesteps.
+                        </p>
+                        <p>The page outputs the predicted class, and a table showing the probabilities of the activity being of a given class.</p>
+                    </div>
+
+                    <form id="predictForm" class="predictForm" enctype="multipart/form-data">
+                        <label for="file">File:</label>
+                        <input type="file" id="file" name="file" accept=".csv" required><br />
+
+                        <label for="model">Choose a Model:</label>
+                        <select name="model" id="model" required>
+                            <option value="LSTM">LSTM</option>
+                            <option value="MiniRocket">MiniRockets</option>
+                            <option value="XGBoost">XGBoost</option>
+                        </select><br />
+
+                        <button type="submit">Predict</button>
+                    </form>
+              
+                    <div id="result"></div>
+
+                    <script>
+                        document.getElementById("predictForm").addEventListener("submit", async function(e) {
+                            e.preventDefault();
+
+                            const formData = new FormData(this);
+
+                            const response = await fetch("/predict", {
+                                method: "POST",
+                                body: formData
+                            });
+
+                            const resultText = await response.text();
+
+                            document.getElementById("result").innerHTML = resultText;
+                        });
+                    </script>
+                
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

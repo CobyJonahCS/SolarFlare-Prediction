@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>MiniRocket</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="topnav">
+    <a href="/">Home</a>
+    <a href="xgboost.html">XGBoost</a>
+    <a href="LSTM.html">LSTM</a>
+    <a class="active" href="minirocket.html">MiniRockets</a>
+    <a href="Predictions.html">Predictions</a>
+    <a href="APIDocs.html">API DOCS</a>
+</div>
+
+<div class="container">
+    <div class="dashboard">
+        <div class="dataset card">
+
+            <!-- TITLE -->
+            <h2>MiniRocket Model Performance</h2>
+
+            <div class="dataset-intro">
+                <p>
+                  Performance metrics for the MiniRocket + SGDClassifier model.
+                </p>
+
+                <p class="dataset-meta">
+                  Trained on partition 1 of SWAN-SF dataset using group-aware split (active regions).
+                </p>
+            </div>
+
+
+            <!-- PERFORMANCE TABLE (you should include yours) -->
+            <h2>Performance Metrics</h2>
+            <div class="feature-table-wrap">
+                <table class="feature-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Accuracy</td><td>0.95</td></tr>
+                        <tr><td>Precision (Macro)</td><td>0.62</td></tr>
+                        <tr><td>Recall (Macro)</td><td>0.88</td></tr>
+                        <tr><td>F1-score (Macro)</td><td>0.67</td></tr>
+                        <tr><td>Precision (Weighted)</td><td>0.98</td></tr>
+                        <tr><td>Recall (Weighted)</td><td>0.95</td></tr>
+                        <tr><td>F1-score (Weighted)</td><td>0.96</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <!-- GRAPHS (THIS WAS YOUR ISSUE) -->
+            <div class="graph-row">
+
+                <div class="graph-card">
+                    <iframe src="{{url_for('static', filename='graphs/minirocket_confusion_matrix.html')}}" scrolling="no"></iframe>
+                </div>
+
+                <div class="graph-card">
+                    <iframe src="{{url_for('static', filename='graphs/minirocket_roc_curve.html')}}" scrolling="no"></iframe>
+                </div>
+
+            </div>
+
+
+            <!-- REPLACE FEATURE IMPORTANCE -->
+            <h2>Model Details</h2>
+            <div class="feature-table-wrap">
+                <table class="feature-table">
+                    <tbody>
+                        <tr><td>Model</td><td>MiniRocket + SGDClassifier</td></tr>
+                        <tr><td>Input</td><td>Multivariate time series (60 x 38)</td></tr>
+                        <tr><td>Kernels</td><td>300</td></tr>
+                        <tr><td>Loss Function</td><td>Log Loss</td></tr>
+                        <tr><td>Threshold</td><td>0.9</td></tr>
+                        <tr><td>Note</td><td>MiniRocket features are transformed and not directly interpretable</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="{{url_for('static', filename='script.js')}}"></script>
+
+</body>
+</html>
