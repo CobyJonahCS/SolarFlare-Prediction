@@ -1,8 +1,9 @@
 import os
 #os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE" #This line was temp fix for some weird conda thing I dont remember
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, jsonify, render_template, request, redirect, url_for
 from flask_cors import CORS
+from flask_restful import Resource, Api
 import torch
 import torch.nn as nn
 import pandas as pd
@@ -10,8 +11,7 @@ import numpy as np
 import pickle
 import joblib
 import xgboost as xgb
-import sktime
-import numba
+from flasgger import Swagger, swag_from
 
 #Directories for the models
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +36,7 @@ class LSTMModel(nn.Module):
         super().__init__()
         self.lstm = nn.LSTM(input_size=6, hidden_size=24, batch_first=True, num_layers=1)
         self.dropout = nn.Dropout(0.5)
-        self.linear = nn.Linear(24, 2) # Errors out unless changed to 24,3 for me (Brooklyn). This change prevents LSTM prediction. TODO- Find cause of error
+        self.linear = nn.Linear(24, 3) # Errors out unless changed to 24,3 for me (Brooklyn). This change prevents LSTM prediction. TODO- Find cause of error
 
     def forward(self, x):
         x, _ = self.lstm(x)
@@ -307,3 +307,41 @@ def predictionsPage():
 @app.route("/APIDocs.html")
 def APIDocs():
     return render_template("APIDocs.html")
+
+# API page management
+app.config['SWAGGER'] = {
+    'title': 'Solar Flare Prediction API',
+    'uiversion': 3
+}
+swagger = Swagger(app)
+api = Api(app)
+
+# Define API endpoints
+class Test(Resource):
+    def get(self,item=None):
+        """
+        This is an example endpoint that returns a given input
+        ---
+        tags:
+            - Test
+        description: Returns the input item
+        parameters: [{
+              "name": "item",
+              "description": "String that will be returned",
+              "allowMultiple": False,
+              "in": path,
+              "type": "string"}]
+        responses:
+            200:
+                description: A successful response
+                examples:
+                    application/json: "{input: \\"test\\"}"
+
+        """
+        if item:
+            return jsonify({"input":item})
+        else:
+            return jsonify([])
+    
+# add endpoints to app
+api.add_resource(Test,"/test/<item>")
