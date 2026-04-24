@@ -36,7 +36,7 @@ class LSTMModel(nn.Module):
         super().__init__()
         self.lstm = nn.LSTM(input_size=6, hidden_size=24, batch_first=True, num_layers=1)
         self.dropout = nn.Dropout(0.5)
-        self.linear = nn.Linear(24, 3) # Errors out unless changed to 24,3 for me (Brooklyn). This change prevents LSTM prediction. TODO- Find cause of error
+        self.linear = nn.Linear(24, 2) # Errors out unless changed to 24,3 for me (Brooklyn). This change prevents LSTM prediction. TODO- Find cause of error
 
     def forward(self, x):
         x, _ = self.lstm(x)
@@ -273,15 +273,11 @@ def predict():
 
 
 # TODO- API Doc work below here
-# Kept in same page, so that flask only needs to be run once
-# Would be nice to incorporate entire app into flask, but just backend stuff for now
-
-# Import swallow to automatically generate API docs
-# Can then copy source over to main page, at least for now
 
 # API methods
 # Prediction calls- Cannot pass in CSV directly, need to check how each model handels predictions, pass in required parameters
-# View models- Return model information and weights, possible just the pickled forms
+# Get models- Return model information and weights, possible just the pickled forms
+# get model parameters- Similar to above, but just required weights and info
 # Extract predicition data- Could load in all data, then just run though prediction code. Select model, return prediction list with timestamps
 
 @app.route("/")
@@ -342,6 +338,21 @@ class Test(Resource):
             return jsonify({"input":item})
         else:
             return jsonify([])
-    
+
+# Get models- JSON files containing model and parameters as found in models folder
+#   Could re-use the loaded values from predictions
+#   Need to check other branches for format of up-to-date models
+# Get parameters- Similar to get models, but ignore main model file
+#   May not be necessary, but wouldn't hurt to add
+# Get predictions- JSON containing full prediction data
+#   Add functions to predict over whole dataset using loaded models, run and store while loading
+#   Use similar prediction method found in each models testing evaluation, and run over whole set
+# Predict- Take in required list of parameters, and return likelihood of a flare/flare category
+#   May not be viable for all models, such as LSTM (requires time series, too many variables for reasonable use)
+#   Check inputs for predictions, create for single sample predictions (may also need to standardise input before predicting)
+
+# Could group APIs, with user input for chosen model. Would result in cleaner docs, more work needed for swallow examples
+# Group Get methods, keep predict separate, in case the required input parameters vary
+
 # add endpoints to app
 api.add_resource(Test,"/test/<item>")
