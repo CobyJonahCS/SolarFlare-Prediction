@@ -11,6 +11,7 @@ import numpy as np
 import pickle
 import joblib
 import xgboost as xgb
+import lightgbm as lgbm
 from flasgger import Swagger, swag_from
 
 #Directories for the models
@@ -36,7 +37,7 @@ class LSTMModel(nn.Module):
         super().__init__()
         self.lstm = nn.LSTM(input_size=6, hidden_size=24, batch_first=True, num_layers=1)
         self.dropout = nn.Dropout(0.5)
-        self.linear = nn.Linear(24, 2) # Errors out unless changed to 24,3 for me (Brooklyn). This change prevents LSTM prediction. TODO- Find cause of error
+        self.linear = nn.Linear(24, 3) # Errors out unless changed to 24,3 for me (Brooklyn). This change prevents LSTM prediction. TODO- Find cause of error
 
     def forward(self, x):
         x, _ = self.lstm(x)
@@ -339,6 +340,128 @@ class Test(Resource):
         else:
             return jsonify([])
 
+# Load in the forecaster parameters (change when forecast predictions page changed)
+with open(os.path.join(models_dir, "LightGBMForecasters", "ABSNJZH_lgbm.pkl"), "rb") as f:
+    ABSNJZH = (pickle.load(f)).booster_.dump_model()
+with open(os.path.join(models_dir, "LightGBMForecasters", "R_VALUE_lgbm.pkl"), "rb") as f:
+    R_VALUE = (pickle.load(f)).booster_.dump_model()
+with open(os.path.join(models_dir, "LightGBMForecasters", "TOTBSQ_lgbm.pkl"), "rb") as f:
+    TOTBSQ = (pickle.load(f)).booster_.dump_model()
+with open(os.path.join(models_dir, "LightGBMForecasters", "TOTPOT_lgbm.pkl"), "rb") as f:
+    TOTPOT = (pickle.load(f)).booster_.dump_model()
+with open(os.path.join(models_dir, "LightGBMForecasters", "TOTUSJH_lgbm.pkl"), "rb") as f:
+    TOTUSJH = (pickle.load(f)).booster_.dump_model()
+with open(os.path.join(models_dir, "LightGBMForecasters", "TOTUSJZ_lgbm.pkl"), "rb") as f:
+    TOTUSJZ = (pickle.load(f)).booster_.dump_model()
+
+# Return all forecasters. Should simplify to only give one at a time
+class getLightGBM(Resource):
+    def get(self, feature):
+        """
+        Get the LightGBM forecasters
+        ---
+        tags:
+            - Getter
+        description: Returns the full set of LightGBM forecasters, one for each of the observed parameters
+        parameters: [{
+            "name": "feature",
+            "description": "The desired model. Will return all on empty input\n
+            Valid inputs: ABSNJZH, R_VALUE, TOTBSQ, TOTPOT, TOTUSJH, TOTUSJZ",
+            "allowMultiple": False,
+            "in": path,
+            "type": "string"}]
+        responses:
+            200:
+                description: Format of a successful response. The models will be returned instead of just the names
+                examples:
+                    application/json: "{ABSNJZH:ABSNJZH,
+                        \nR_VALUE:R_VALUE,
+                        \nTOTBSQ:TOTBSQ,
+                        \nTOTPOT:TOTPOT,
+                        \nTOTUSJH:TOTUSJH,
+                        \nTOTUSJZ:TOTUSJZ}"
+
+        """
+        if feature:
+            if str(feature).upper() == "ABSNJZH":
+                return {"ABSNJZH":ABSNJZH}
+            elif str(feature).upper() == "R_VALUE":
+                return {"R_VALUE":R_VALUE}
+            elif str(feature).upper() == "TOTBSQ":
+                return {"TOTBSQ":TOTBSQ}
+            elif str(feature).upper() == "TOTPOT":
+                return {"TOTPOT":TOTPOT}
+            elif str(feature).upper() == "TOTUSJH":
+                return {"TOTUSJH":TOTUSJH}
+            elif str(feature).upper() == "TOTUSJZ":
+                return {"TOTUSJZ":TOTUSJZ}
+            elif str(feature).upper() == "UNDEFINED":
+                return {"ABSNJZH":ABSNJZH,
+                            "R_VALUE":R_VALUE,
+                            "TOTBSQ":TOTBSQ,
+                            "TOTPOT":TOTPOT,
+                            "TOTUSJH":TOTUSJH,
+                            "TOTUSJZ":TOTUSJZ}
+            else:
+                return []
+        else:
+            return {"ABSNJZH":ABSNJZH,
+                        "R_VALUE":R_VALUE,
+                        "TOTBSQ":TOTBSQ,
+                        "TOTPOT":TOTPOT,
+                        "TOTUSJH":TOTUSJH,
+                        "TOTUSJZ":TOTUSJZ}
+        
+class getLSTM(Resource):
+    def get(self):
+        """
+        Get the LSTM model
+        ---
+        tags:
+            - Getter
+        description: Returns the LSTM model and all requred parameter files
+        responses:
+            200:
+                description: Format of a successful response. The model will be returned instead of just the name
+                examples:
+                    application/json: "{LSTM:LSTM}"
+
+        """
+        return {"LSTM":"TODO"} # TODO: Get latest LSTM, manually convert to JSON
+
+class getMiniRockets(Resource):
+    def get(self):
+        """
+        Get the MiniRockets model
+        ---
+        tags:
+            - Getter
+        description: Returns the Minirockets model and all requred parameter files
+        responses:
+            200:
+                description: Format of a successful response. The model will be returned instead of just the name
+                examples:
+                    application/json: "{MiniRockets:MR}"
+
+        """
+        return {"Minirockets":"TODO"} # TODO: Manually convert MR files to JSON
+
+class getXGBoost(Resource):
+    def get(self):
+        """
+        Get the XGBoost model
+        ---
+        tags:
+            - Getter
+        description: Returns the Minirockets model and all requred parameter files
+        responses:
+            200:
+                description: Format of a successful response. The model will be returned instead of just the name
+                examples:
+                    application/json: "{XGBoost:xgb}"
+
+        """
+        return {"XGBoost":"TODO"} # TODO: Manually convert XGB files to JSON
 # Get models- JSON files containing model and parameters as found in models folder
 #   Could re-use the loaded values from predictions
 #   Need to check other branches for format of up-to-date models
@@ -356,3 +479,7 @@ class Test(Resource):
 
 # add endpoints to app
 api.add_resource(Test,"/test/<item>")
+api.add_resource(getLightGBM,"/api/get/LightBGM/<feature>")
+api.add_resource(getLSTM,"/api/get/LSTM")
+api.add_resource(getMiniRockets,"/api/get/minirockets")
+api.add_resource(getXGBoost,"/api/get/xgboost")
