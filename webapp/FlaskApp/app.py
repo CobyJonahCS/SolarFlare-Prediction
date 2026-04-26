@@ -12,6 +12,7 @@ import pickle
 import joblib
 import xgboost as xgb
 import lightgbm as lgbm
+import json
 from flasgger import Swagger, swag_from
 
 #Directories for the models
@@ -37,7 +38,7 @@ class LSTMModel(nn.Module):
         super().__init__()
         self.lstm = nn.LSTM(input_size=6, hidden_size=24, batch_first=True, num_layers=1)
         self.dropout = nn.Dropout(0.5)
-        self.linear = nn.Linear(24, 3) # Errors out unless changed to 24,3 for me (Brooklyn). This change prevents LSTM prediction. TODO- Find cause of error
+        self.linear = nn.Linear(24, 2) # Errors out unless changed to 24,3 for me (Brooklyn). This change prevents LSTM prediction. TODO- Find cause of error
 
     def forward(self, x):
         x, _ = self.lstm(x)
@@ -424,10 +425,11 @@ class getLSTM(Resource):
             200:
                 description: Format of a successful response. The model will be returned instead of just the name
                 examples:
-                    application/json: "{LSTM:LSTM}"
+                    application/json: "{Model:LSTM,\nScaler:Scaler}"
 
         """
-        return {"LSTM":"TODO"} # TODO: Get latest LSTM, manually convert to JSON
+        return {"Model":"TODO",
+                "Scaler":"Scaler"}
 
 class getMiniRockets(Resource):
     def get(self):
@@ -441,11 +443,14 @@ class getMiniRockets(Resource):
             200:
                 description: Format of a successful response. The model will be returned instead of just the name
                 examples:
-                    application/json: "{MiniRockets:MR}"
+                    application/json: "{Model:MR,\nScaler:Scaler\n,sgdc:sgdc}"
 
         """
-        return {"Minirockets":"TODO"} # TODO: Manually convert MR files to JSON
+        return {"Model":"TODO",
+                "Scaler":"Scaler",
+                "sgdc":"sgdc"}
 
+# Convert the XGBoost model to JSON
 class getXGBoost(Resource):
     def get(self):
         """
@@ -458,24 +463,25 @@ class getXGBoost(Resource):
             200:
                 description: Format of a successful response. The model will be returned instead of just the name
                 examples:
-                    application/json: "{XGBoost:xgb}"
+                    application/json: "{Model:xgb,\nScaler:Scaler,\nFeatureNames:FeatureNames}"
 
         """
-        return {"XGBoost":"TODO"} # TODO: Manually convert XGB files to JSON
+        return {"Model":xgb_model,
+                "Scaler":"Scaler",
+                "FeatureNames":"FeatureNames"}
 # Get models- JSON files containing model and parameters as found in models folder
 #   Could re-use the loaded values from predictions
 #   Need to check other branches for format of up-to-date models
-# Get parameters- Similar to get models, but ignore main model file
-#   May not be necessary, but wouldn't hurt to add
+#   Converting models to JSON- Create notebook to load models and re-store/convert to JSON. Need to get up to date models firt
+
 # Get predictions- JSON containing full prediction data
 #   Add functions to predict over whole dataset using loaded models, run and store while loading
 #   Use similar prediction method found in each models testing evaluation, and run over whole set
+#   Could also do as individual notebook, store file to return
 # Predict- Take in required list of parameters, and return likelihood of a flare/flare category
 #   May not be viable for all models, such as LSTM (requires time series, too many variables for reasonable use)
 #   Check inputs for predictions, create for single sample predictions (may also need to standardise input before predicting)
 
-# Could group APIs, with user input for chosen model. Would result in cleaner docs, more work needed for swallow examples
-# Group Get methods, keep predict separate, in case the required input parameters vary
 
 # add endpoints to app
 api.add_resource(Test,"/test/<item>")
