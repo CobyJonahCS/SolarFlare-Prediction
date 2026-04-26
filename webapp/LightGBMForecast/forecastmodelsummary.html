@@ -1,0 +1,162 @@
+
+<style>
+
+
+:root{
+  --bg: #0b1020;
+  --surface: #1a233a;         
+  --surface-2: #151e33;
+  --header: #96c6f5;          
+  --border: rgba(255,255,255,0.12);
+  --text: #f1f5f9;           
+  --muted: rgba(255,255,255,0.75);
+  --accent: #7dd3fc;
+}
+
+*{ box-sizing: border-box; }
+
+html{
+  font-size: clamp(0.95rem, 1vw, 1rem);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body{
+  margin: 0;
+  padding: 1rem;
+  background: transparent;
+  color: var(--text);
+}
+
+table.dataframe{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--surface), var(--surface-2));
+  border: 0.0625rem solid var(--border);
+  box-shadow: 0 1rem 2.5rem rgba(0,0,0,0.45);
+}
+
+
+table.dataframe thead th{
+  background: var(--header);
+  color: #0f172a;              
+  font-weight: 700;
+  padding: 0.9rem 1rem;
+  border-bottom: 0.0625rem solid var(--border);
+}
+
+
+table.dataframe thead tr:nth-child(2) th{
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* cells */
+table.dataframe tbody th,
+table.dataframe tbody td{
+  padding: 0.85rem 1rem;
+  border-bottom: 0.0625rem solid var(--border);
+}
+
+/* row labels */
+table.dataframe tbody th{
+  font-weight: 600;
+  text-align: left;
+}
+
+/* numeric columns centered */
+table.dataframe tbody td{
+  text-align: center;
+  font-weight: 500;
+}
+
+/* zebra with more contrast */
+table.dataframe tbody tr:nth-child(even){
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* hover with accent glow */
+table.dataframe tbody tr:hover{
+  background: rgba(125,211,252,0.15);
+  transition: background 0.15s ease;
+}
+
+/* remove bottom border on last row */
+table.dataframe tbody tr:last-child th,
+table.dataframe tbody tr:last-child td{
+  border-bottom: none;
+}
+</style>
+
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: center;">
+      <th>Target</th>
+      <th>Mean_MAE</th>
+      <th>Mean_RMSE</th>
+      <th>Mean_NRMSE</th>
+      <th>Mean_R2</th>
+      <th>Std_RMSE</th>
+      <th>N_Features</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>R_VALUE</td>
+      <td>2.066120e-02</td>
+      <td>6.629788e-02</td>
+      <td>0.137204</td>
+      <td>0.969999</td>
+      <td>6.035026e-02</td>
+      <td>187</td>
+    </tr>
+    <tr>
+      <td>ABSNJZH</td>
+      <td>4.441002e+01</td>
+      <td>9.236902e+01</td>
+      <td>0.169148</td>
+      <td>0.961145</td>
+      <td>1.041782e+02</td>
+      <td>187</td>
+    </tr>
+    <tr>
+      <td>TOTUSJZ</td>
+      <td>2.992190e+12</td>
+      <td>6.091025e+12</td>
+      <td>0.183875</td>
+      <td>0.940573</td>
+      <td>6.713804e+12</td>
+      <td>187</td>
+    </tr>
+    <tr>
+      <td>TOTUSJH</td>
+      <td>2.597600e+02</td>
+      <td>4.730788e+02</td>
+      <td>0.232138</td>
+      <td>0.922106</td>
+      <td>4.227834e+02</td>
+      <td>187</td>
+    </tr>
+    <tr>
+      <td>TOTBSQ</td>
+      <td>4.442330e+09</td>
+      <td>8.008721e+09</td>
+      <td>0.264905</td>
+      <td>0.871255</td>
+      <td>7.765100e+09</td>
+      <td>187</td>
+    </tr>
+    <tr>
+      <td>TOTPOT</td>
+      <td>9.791870e+22</td>
+      <td>1.778955e+23</td>
+      <td>0.295494</td>
+      <td>0.854778</td>
+      <td>1.467152e+23</td>
+      <td>187</td>
+    </tr>
+  </tbody>
+</table>
