@@ -1,7 +1,7 @@
 import os
 #os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE" #This line was temp fix for some weird conda thing I dont remember
 
-from flask import Flask, jsonify, render_template, request, redirect, url_for
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from flask_restful import Resource, Api
 import torch
@@ -11,9 +11,8 @@ import numpy as np
 import pickle
 import joblib
 import xgboost as xgb
-import lightgbm as lgbm
 import json
-from flasgger import Swagger, swag_from
+from flasgger import Swagger
 
 #Directories for the models
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -314,33 +313,6 @@ app.config['SWAGGER'] = {
 swagger = Swagger(app)
 api = Api(app)
 
-# Define API endpoints
-class Test(Resource):
-    def get(self,item=None):
-        """
-        This is an example endpoint that returns a given input
-        ---
-        tags:
-            - Test
-        description: Returns the input item
-        parameters: [{
-              "name": "item",
-              "description": "String that will be returned",
-              "allowMultiple": False,
-              "in": path,
-              "type": "string"}]
-        responses:
-            200:
-                description: A successful response
-                examples:
-                    application/json: "{input: \\"test\\"}"
-
-        """
-        if item:
-            return jsonify({"input":item})
-        else:
-            return jsonify([])
-
 # Load in the forecaster parameters (change when forecast predictions page changed)
 with open(os.path.join(models_dir, "LightGBMForecasters", "ABSNJZH_lgbm.pkl"), "rb") as f:
     ABSNJZH = (pickle.load(f)).booster_.dump_model()
@@ -362,7 +334,7 @@ class getLightGBM(Resource):
         Get the LightGBM forecasters
         ---
         tags:
-            - Getter
+            - Get model
         description: Returns the full set of LightGBM forecasters, one for each of the observed parameters
         parameters: [{
             "name": "feature",
@@ -412,14 +384,26 @@ class getLightGBM(Resource):
                         "TOTPOT":TOTPOT,
                         "TOTUSJH":TOTUSJH,
                         "TOTUSJZ":TOTUSJZ}
-        
+
+# Get the JSON versions of all models
+with open(os.path.join(models_dir, "XGBoost", "XGBoostModel.json"), "rb") as f:
+    XGBoostJson = json.load(f)
+with open(os.path.join(models_dir, "XGBoost", "XGBoostScaler.json"), "rb") as f:
+    XGBoostJsonScaler = json.load(f)
+with open(os.path.join(models_dir, "MiniRockets", "MiniRocketsModel.json"), "rb") as f:
+    miniRocketsJson = json.load(f)
+with open(os.path.join(models_dir, "MiniRockets", "MiniRocketsScaler.json"), "rb") as f:
+    miniRocketsJsonScaler = json.load(f)
+with open(os.path.join(models_dir, "MiniRockets", "MiniRocketsSgdc.json"), "rb") as f:
+    miniRocketsJsonSgdc = json.load(f)
+
 class getLSTM(Resource):
     def get(self):
         """
         Get the LSTM model
         ---
         tags:
-            - Getter
+            - Get model
         description: Returns the LSTM model and all requred parameter files
         responses:
             200:
@@ -437,7 +421,7 @@ class getMiniRockets(Resource):
         Get the MiniRockets model
         ---
         tags:
-            - Getter
+            - Get model
         description: Returns the Minirockets model and all requred parameter files
         responses:
             200:
@@ -446,9 +430,9 @@ class getMiniRockets(Resource):
                     application/json: "{Model:MR,\nScaler:Scaler\n,sgdc:sgdc}"
 
         """
-        return {"Model":"TODO",
-                "Scaler":"Scaler",
-                "sgdc":"sgdc"}
+        return {"Model":miniRocketsJson,
+                "Scaler":miniRocketsJsonScaler,
+                "sgdc":miniRocketsJsonSgdc}
 
 # Convert the XGBoost model to JSON
 class getXGBoost(Resource):
@@ -457,7 +441,7 @@ class getXGBoost(Resource):
         Get the XGBoost model
         ---
         tags:
-            - Getter
+            - Get model
         description: Returns the Minirockets model and all requred parameter files
         responses:
             200:
@@ -466,9 +450,9 @@ class getXGBoost(Resource):
                     application/json: "{Model:xgb,\nScaler:Scaler,\nFeatureNames:FeatureNames}"
 
         """
-        return {"Model":xgb_model,
-                "Scaler":"Scaler",
-                "FeatureNames":"FeatureNames"}
+        return {"Model":XGBoostJson,
+                "Scaler":XGBoostJsonScaler,
+                "FeatureNames":xgb_featnames}
 # Get models- JSON files containing model and parameters as found in models folder
 #   Could re-use the loaded values from predictions
 #   Need to check other branches for format of up-to-date models
@@ -484,7 +468,6 @@ class getXGBoost(Resource):
 
 
 # add endpoints to app
-api.add_resource(Test,"/test/<item>")
 api.add_resource(getLightGBM,"/api/get/LightBGM/<feature>")
 api.add_resource(getLSTM,"/api/get/LSTM")
 api.add_resource(getMiniRockets,"/api/get/minirockets")
