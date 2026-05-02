@@ -249,6 +249,7 @@ def predict():
         result = f"<p>Prediction: {pred}</p><div class='feature-table-wrap'>{probs_df.to_html(border=False, classes='feature-table')}</div>"
 
         return result
+        
     #MiniRockets Prediction
     if model == "MiniRocket":
         X = preprocessing_MiniRocket(df) #Prepare data for MiniRockets model
