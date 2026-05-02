@@ -37,7 +37,7 @@ class LSTMModel(nn.Module):
         super().__init__()
         self.lstm = nn.LSTM(input_size=6, hidden_size=24, batch_first=True, num_layers=1)
         self.dropout = nn.Dropout(0.5)
-        self.linear = nn.Linear(24, 2) # Errors out unless changed to 24,3 for me (Brooklyn). This change prevents LSTM prediction. TODO- Find cause of error
+        self.linear = nn.Linear(24, 2) 
 
     def forward(self, x):
         x, _ = self.lstm(x)
@@ -216,7 +216,6 @@ def predict():
     #XGBoost Prediction
     if model == "XGBoost":
         df_pre = preprocessing_XGBoost(df) #Prepare data for XGBoost model
-
         df_pre = df_pre[xgb_featnames] #Take only the feature names the XGBoost expects. Preprocessing does this already, this is more like a sanity check.
 
         df_scal = xgb_scaler.transform(df_pre) #XGBoost scaler
@@ -272,15 +271,6 @@ def predict():
 
     return result
 
-
-# TODO- API Doc work below here
-
-# API methods
-# Prediction calls- Cannot pass in CSV directly, need to check how each model handels predictions, pass in required parameters
-# Get models- Return model information and weights, possible just the pickled forms
-# get model parameters- Similar to above, but just required weights and info
-# Extract predicition data- Could load in all data, then just run though prediction code. Select model, return prediction list with timestamps
-
 @app.route("/")
 def home():
     return render_template('index.html')
@@ -305,10 +295,19 @@ def predictionsPage():
 def APIDocs():
     return render_template("APIDocs.html")
 
+@app.route("/LightGBM.html")
+def LightGBM():
+    return render_template("LightGBM.html")
+
+@app.route("/feature_descriptions.html")
+def feature_descriptions():
+    return render_template("feature_descriptions.html")
+
 # API page management
 app.config['SWAGGER'] = {
     'title': 'Solar Flare Prediction API',
-    'uiversion': 3
+    'uiversion': 3,
+    'version':"1.0"
 }
 swagger = Swagger(app)
 api = Api(app)
@@ -396,6 +395,10 @@ with open(os.path.join(models_dir, "MiniRockets", "MiniRocketsScaler.json"), "rb
     miniRocketsJsonScaler = json.load(f)
 with open(os.path.join(models_dir, "MiniRockets", "MiniRocketsSgdc.json"), "rb") as f:
     miniRocketsJsonSgdc = json.load(f)
+with open(os.path.join(models_dir, "LSTM", "LSTMModel.json"), "rb") as f:
+    LstmJSON = json.load(f) # Ignore formatting change, constarts are defined by all caps
+with open(os.path.join(models_dir, "LSTM", "LSTMScaler.json"), "rb") as f:
+    LSTMJSONScaler = json.load(f)
 
 class getLSTM(Resource):
     def get(self):
@@ -412,8 +415,8 @@ class getLSTM(Resource):
                     application/json: "{Model:LSTM,\nScaler:Scaler}"
 
         """
-        return {"Model":"TODO",
-                "Scaler":"Scaler"}
+        return {"Model":LstmJSON,
+                "Scaler":LSTMJSONScaler}
 
 class getMiniRockets(Resource):
     def get(self):
@@ -442,7 +445,7 @@ class getXGBoost(Resource):
         ---
         tags:
             - Get model
-        description: Returns the Minirockets model and all requred parameter files
+        description: Returns the XGBoost model and all requred parameter files
         responses:
             200:
                 description: Format of a successful response. The model will be returned instead of just the name
@@ -453,11 +456,129 @@ class getXGBoost(Resource):
         return {"Model":XGBoostJson,
                 "Scaler":XGBoostJsonScaler,
                 "FeatureNames":xgb_featnames}
-# Get models- JSON files containing model and parameters as found in models folder
-#   Could re-use the loaded values from predictions
-#   Need to check other branches for format of up-to-date models
-#   Converting models to JSON- Create notebook to load models and re-store/convert to JSON. Need to get up to date models firt
 
+class getXGBoostPred(Resource):
+    def get(self, partition):
+        """
+        Get the XGBoost model prediction data
+        ---
+        tags:
+            - Get prediction data
+        description: Returns the prediction data calculated by the XGBoost model for the selected partition
+        parameters: [{
+            "name": "partition",
+            "description": "The desired partition. Will return nothing on an empty or invalid input\n
+            Valid inputs: partition1, partition2, partition3, partition4, partition5",
+            "allowMultiple": False,
+            "in": path,
+            "type": "string"}]
+        responses:
+            200:
+                description: Format of a successful response. The model will be returned instead of just the name
+                examples:
+                    application/json: "{file_name:{FL:0.0, NF:1.0}}"
+
+        """
+        data = {}
+        if partition:
+            if(str(partition) == "partition1"):
+                with open(os.path.join(models_dir, "prediction_data", "XGBoostPredPart1.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition2"):
+                with open(os.path.join(models_dir, "prediction_data", "XGBoostPredPart2.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition3"):
+                with open(os.path.join(models_dir, "prediction_data", "XGBoostPredPart3.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition4"):
+                with open(os.path.join(models_dir, "prediction_data", "XGBoostPredPart4.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition5"):
+                with open(os.path.join(models_dir, "prediction_data", "XGBoostPredPart5.json"), "rb") as f:
+                    data = json.load(f)
+        return data
+
+class getLSTMPred(Resource):
+    def get(self, partition):
+        """
+        Get the LSTM model prediction data
+        ---
+        tags:
+            - Get prediction data
+        description: Returns the prediction data calculated by the LSTM model for the selected partition
+        parameters: [{
+            "name": "partition",
+            "description": "The desired partition. Will return nothing on an empty or invalid input\n
+            Valid inputs: partition1, partition2, partition3, partition4, partition5",
+            "allowMultiple": False,
+            "in": path,
+            "type": "string"}]
+        responses:
+            200:
+                description: Format of a successful response. The model will be returned instead of just the name
+                examples:
+                    application/json: "{file_name:{FL:0.0, NF:1.0}}"
+
+        """
+        data = {}
+        if partition:
+            if(str(partition) == "partition1"):
+                with open(os.path.join(models_dir, "prediction_data", "LSTMPredPart1.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition2"):
+                with open(os.path.join(models_dir, "prediction_data", "LSTMPredPart2.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition3"):
+                with open(os.path.join(models_dir, "prediction_data", "LSTMPredPart3.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition4"):
+                with open(os.path.join(models_dir, "prediction_data", "LSTMPredPart4.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition5"):
+                with open(os.path.join(models_dir, "prediction_data", "LSTMPredPart5.json"), "rb") as f:
+                    data = json.load(f)
+        return data
+        
+class getMiniRocketsPred(Resource):
+    def get(self, partition):
+        """
+        Get the MiniRockets model prediction data
+        ---
+        tags:
+            - Get prediction data
+        description: Returns the prediction data calculated by the MiniRockets model for the selected partition
+        parameters: [{
+            "name": "partition",
+            "description": "The desired partition. Will return nothing on an empty or invalid input\n
+            Valid inputs: partition1, partition2, partition3, partition4, partition5",
+            "allowMultiple": False,
+            "in": path,
+            "type": "string"}]
+        responses:
+            200:
+                description: Format of a successful response. The model will be returned instead of just the name
+                examples:
+                    application/json: "{file_name:{FL:0.0, NF:1.0}}"
+
+        """
+        data = {}
+        if partition:
+            if(str(partition) == "partition1"):
+                with open(os.path.join(models_dir, "prediction_data", "MiniRocketsPredPart1.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition2"):
+                with open(os.path.join(models_dir, "prediction_data", "MiniRocketsPredPart2.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition3"):
+                with open(os.path.join(models_dir, "prediction_data", "MiniRocketsPredPart3.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition4"):
+                with open(os.path.join(models_dir, "prediction_data", "MiniRocketsPredPart4.json"), "rb") as f:
+                    data = json.load(f)
+            elif(str(partition) == "partition5"):
+                with open(os.path.join(models_dir, "prediction_data", "MiniRocketsPredPart5.json"), "rb") as f:
+                    data = json.load(f)
+        return data
 # Get predictions- JSON containing full prediction data
 #   Add functions to predict over whole dataset using loaded models, run and store while loading
 #   Use similar prediction method found in each models testing evaluation, and run over whole set
@@ -472,3 +593,6 @@ api.add_resource(getLightGBM,"/api/get/LightBGM/<feature>")
 api.add_resource(getLSTM,"/api/get/LSTM")
 api.add_resource(getMiniRockets,"/api/get/minirockets")
 api.add_resource(getXGBoost,"/api/get/xgboost")
+api.add_resource(getXGBoostPred,"/api/getPredictions/XGBoost/<partition>")
+api.add_resource(getLSTMPred,"/api/getPredictions/LSTM/<partition>")
+api.add_resource(getMiniRocketsPred,"/api/getPredictions/MiniRockets/<partition>")
