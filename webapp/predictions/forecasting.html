@@ -3,7 +3,7 @@
 <html>
 
     <head>
-        <title>Predictions</title>
+        <title>Forecasting</title>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <link rel="stylesheet" href="../style.css"> 
     </head>
@@ -17,8 +17,8 @@
                 <a href="../MiniRockets/minirocket.html">MiniRockets</a>
                 <a href="../LightGBMForecast/LightGBM.html">LightGBM Forecasters</a>
                 <a href="../LightGBMForecast/feature_descriptions.html">Feature Descriptions</a>
-                <a class="active" href="#">Predictions</a>
-                <a href="../predictions/forecasting.html">Forecasting</a>
+                <a href="../predictions/Predictions.html">Predictions</a>
+                <a class="active"href="#">Forecasting</a>
                 <a href="http://127.0.0.1:5000/apidocs">API DOCS</a>
         </div>
 
@@ -33,27 +33,20 @@
                     <!-- Page descriptor block -->
                     <div class="dataset-intro">
                         <p>
-                          Page for creating predictions with a model of your choice.
+                          Page for using our LightGBM forecasting models.
                         </p>
                         <p>
                             Upload a CSV file in the form below and press the predict button to view the prediction. 
                             The CSV file must be a 12 hour window of solar flare activity of 60 timesteps.
                         </p>
-                        <p>The page outputs the predicted class, and a table showing the probabilities of the activity being of a given class.</p>
+                        <p>The page outputs the predicted next timestep/12 minute time window.</p>
                     </div>
 
                     <form id="predictForm" class="predictForm" enctype="multipart/form-data">
                         <label for="file">File:</label>
                         <input type="file" id="file" name="file" accept=".csv" required><br />
 
-                        <label for="model">Choose a Model:</label>
-                        <select name="model" id="model" required>
-                            <option value="LSTM">LSTM</option>
-                            <option value="MiniRocket">MiniRockets</option>
-                            <option value="XGBoost">XGBoost</option>
-                        </select><br />
-
-                        <button type="submit">Predict</button>
+                        <button type="submit">Forecast</button>
                     </form>
               
                     <div id="result"></div>
@@ -64,17 +57,20 @@
 
                             const formData = new FormData(this);
 
-                            const response = await fetch("http://127.0.0.1:5000/predict", {
+                            const response = await fetch("http://127.0.0.1:5000/forecast", {
                                 method: "POST",
                                 body: formData
                             });
 
                             const resultText = await response.text();
 
-                            document.getElementById("result").innerHTML = resultText;
+                            const container = document.getElementById("result");
+                            container.innerHTML = resultText;
+                            container.querySelectorAll("script").forEach(script => {
+                                eval(script.innerText);
+                            });
                         });
                     </script>
-                
                 </div>
             </div>
         </div>

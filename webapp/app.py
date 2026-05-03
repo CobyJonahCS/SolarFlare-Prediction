@@ -1,10 +1,7 @@
-# Light version of flask app, only containing prediction and docs data. Used if basic html files are preferred
-# Use version within flaskApp if whole site hosting is preferred
-
 import os
 #os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE" #This line was temp fix for some weird conda thing I dont remember
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, render_template, request
 from flask_cors import CORS
 from flask_restful import Resource, Api
 import torch
@@ -14,8 +11,12 @@ import numpy as np
 import pickle
 import joblib
 import xgboost as xgb
+import re
 import json
 from flasgger import Swagger
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
 
 #Directories for the models
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -67,6 +68,15 @@ with open(os.path.join(models_dir, "MiniRockets", "scaler.pkl"), "rb") as f:
 
 with open(os.path.join(models_dir, "MiniRockets", "sgdc.pkl"), "rb") as f:
     mr_sgdc = pickle.load(f)
+
+#Load LightGBM Forecasters
+lightgbmdir = os.path.join(models_dir, "LightGBMForecasters")
+ABSNJZH_model = joblib.load(os.path.join(lightgbmdir, "ABSNJZH_lgbm.pkl"))
+R_VALUE_model = joblib.load(os.path.join(lightgbmdir, "R_VALUE_lgbm.pkl"))
+TOTBSQ_model = joblib.load(os.path.join(lightgbmdir, "TOTBSQ_lgbm.pkl"))
+TOTPOT_model = joblib.load(os.path.join(lightgbmdir, "TOTPOT_lgbm.pkl"))
+TOTUSJH_model = joblib.load(os.path.join(lightgbmdir, "TOTUSJH_lgbm.pkl"))
+TOTUSJZ_model = joblib.load(os.path.join(lightgbmdir, "TOTUSJZ_lgbm.pkl"))
 
 #Pre-Processing Functions for each Model. Each function can be found in detail in the notebooks.
 #XGBoost pre-processing can be found in data_cleaning.ipynb
@@ -201,6 +211,26 @@ def preprocessing_MiniRocket(df):
     sample =  df.drop(columns=dropColumns)
     return sample.values
 
+#Forecaster pre-processing can be found in ligthGBMforcaster.ipynb
+def build_features_for_file(temp_df, feature_cols, lags, rolling_windows):
+    #rolling only use prev
+    feature_dict = {}
+
+    for feature in feature_cols:
+        s = temp_df[feature]
+
+        # lags: past only
+        for lag in lags:
+            feature_dict[f"{feature}_lag_{lag}"] = s.shift(lag)
+
+        # rolling only past rows
+        shifted = s.shift(1)
+        for window in rolling_windows:
+            feature_dict[f"{feature}_roll_mean_{window}"] = shifted.rolling(window=window, min_periods=1).mean()
+            feature_dict[f"{feature}_roll_std_{window}"] = shifted.rolling(window=window, min_periods=1).std()
+
+    return pd.DataFrame(feature_dict, index=temp_df.index)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -274,6 +304,100 @@ def predict():
 
     return result
 
+@app.route('/forecast', methods=['POST'])
+def forecast():
+    FEATURE_COLS = [ # these are the features that we need to forecast 
+        "TOTUSJH",
+        "TOTBSQ",
+        "TOTPOT",
+        "TOTUSJZ",
+        "ABSNJZH",
+        "R_VALUE",
+    ]
+
+    LAGS            = list(range(1, 25))   # past 24 steps (4.8 hrs) as input
+    ROLLING_WINDOWS = [3, 6, 9]
+
+    #Grab csv file and requested model from prediction form
+    csv = request.files['file']
+
+    print(csv.filename)
+
+    #Read csv file into a pandas dataframe
+    df = pd.read_csv(csv, sep="\t")
+    df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
+    df = df.sort_values("Timestamp").reset_index(drop=True)
+
+    ar_match = re.search(r"_ar(\d+)", csv.filename)
+    df["active_region"] = int(ar_match.group(1)) if ar_match else pd.NA
+    df["source_file"] = csv.filename
+
+    # interpolate raw features only
+    df[FEATURE_COLS] = (
+        df[FEATURE_COLS]
+        .interpolate(method="linear", axis=0, limit_direction="both")
+        .ffill()
+        .bfill()
+    )
+
+    features = build_features_for_file(df, feature_cols=FEATURE_COLS, lags=LAGS, rolling_windows=ROLLING_WINDOWS)
+
+    new_df = pd.concat([df, features], axis=1)
+    X = new_df.copy()
+    predictions = {}
+
+    #Predictions for each feature with their model.
+    predictions["ABSNJZH"] = ABSNJZH_model.predict(X[ABSNJZH_model.feature_name_].to_numpy())
+    predictions["R_VALUE"] = R_VALUE_model.predict(X[R_VALUE_model.feature_name_].to_numpy())
+    predictions["TOTBSQ"] = TOTBSQ_model.predict(X[TOTBSQ_model.feature_name_].to_numpy())
+    predictions["TOTPOT"] = TOTPOT_model.predict(X[TOTPOT_model.feature_name_].to_numpy())
+    predictions["TOTUSJH"] = TOTUSJH_model.predict(X[TOTUSJH_model.feature_name_].to_numpy())
+    predictions["TOTUSJZ"] = TOTUSJZ_model.predict(X[TOTUSJZ_model.feature_name_].to_numpy())
+
+    #Turn into dataframe
+    output_df = pd.DataFrame.from_dict(predictions)
+
+    #Use timestamps as index
+    times = pd.date_range(
+        start=df["Timestamp"].iloc[-1],
+        periods=len(output_df)+1,
+        freq="12min"
+    )[1:]
+    output_df.index = times + pd.Timedelta(minutes=12) #Shift timestamps forward by 1 timestep, as the predictions are
+
+    #Plotly subplots
+    fig = make_subplots(
+        rows=2,
+        cols=3,
+        vertical_spacing=0.3,
+        horizontal_spacing=0.08,
+        subplot_titles=FEATURE_COLS
+    )
+
+    #Fill the subplots with values
+    count = 0
+    for r in range(1,3):
+        for c in range(1,4):
+            fig.add_trace(
+                go.Scatter(x=output_df.index, y=output_df[FEATURE_COLS[count]].values.tolist()),
+                row=r, col=c
+            )
+            count += 1
+
+    #Add titles, and remove pointless key/legend
+    fig.update_layout(
+        title="Forecasting Predictions for file: "+csv.filename,
+        showlegend=False
+    )
+
+    #Convert figure to html
+    graph = fig.to_html(full_html=False, include_plotlyjs=False, config={"responsive": True})
+    predicted_values = output_df.tail(1) #Get the last value, the predicted 61st timestep
+
+    #Output the result, with the predicted values turned into a html table
+    result = f"<p>Forecast:</p><div class='feature-table-wrap'>{predicted_values.to_html(border=False, classes='feature-table')}</div><div>{graph}</div>"
+    return result
+
 #@app.route("/")
 #def home():
 #    return render_template('index.html')
@@ -293,6 +417,10 @@ def predict():
 #@app.route("/Predictions.html")
 #def predictionsPage():
 #    return render_template("Predictions.html")
+
+#@app.route("/forecasting.html")
+#def forecastinPage():
+#    return render_template("forecasting.html")
 
 #@app.route("/APIDocs.html")
 #def APIDocs():
