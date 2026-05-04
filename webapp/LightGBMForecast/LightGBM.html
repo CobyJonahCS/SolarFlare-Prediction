@@ -15,13 +15,15 @@
     <body>
 
         <div class="topnav">
-                <a class="active" href="../index.html">Home</a>
+                <a href="../index.html">Home</a>
                 <a href="../XGBoost/xgboost.html">XGBoost</a>
                 <a href="../LSTM/LSTM.html">LSTM</a>
                 <a href="../MiniRockets/minirocket.html">MiniRockets</a>
+                <a class="active" href="#">LightGBM Forecasters</a>
                 <a href="feature_descriptions.html">Feature Descriptions</a>
                 <a href="../predictions/Predictions.html">Predictions</a>
-                <a href="#APIDOCS">API DOCS</a>
+                <a href="../predictions/forecasting.html">Forecasting</a>
+                <a href="http://127.0.0.1:5000/apidocs">API DOCS</a>
 
         </div>
 
@@ -34,20 +36,16 @@
 
             
 <div class="dataset card">
-  <h2>About Dataset</h2>
+  <h2>LightGBM Forecasting Performance</h2>
 
   <!-- Dataset descriptor block -->
   <div class="dataset-intro">
     <p>
-      This dashboard is built using the 
-      <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/EBCFKM"
-         target="_blank" rel="noopener">
-        SWAN-SF Dataset
-      </a>.
+      Performance metrics for the LightGBM forecasters
     </p>
 
     <p class="dataset-meta">
-      Multivariate time series (MVTS) data extracted from solar photospheric vector magnetograms in Spaceweather HMI Active Region Patch (SHARP) series. (2019-01-31) 
+      Trained individually for six features: ABSNJZH, R_VALUE, TOTBSQ, TOTPOT, TOTUSJH, and TOTUSJZ
     </p>
   </div>
 

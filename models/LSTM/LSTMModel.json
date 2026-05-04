@@ -1,0 +1,1 @@
+{"LSTM": {"input_size": 6, "hidden_size": 24, "batch_first": true}, "dropout": {"p": 0.5, "inplace": false}, "linear": {"in_features": 24, "out_featurs": 2, "bias": true}}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>Forecasting</title>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+
+
+    <body>
+        <div class="topnav">
+                <a href="/">Home</a>
+                <a href="xgboost.html">XGBoost</a>
+                <a href="LSTM.html">LSTM</a>
+                <a href="minirocket.html">MiniRockets</a>
+                <a href="LightGBM.html">LightGBM Forecasters</a>
+                <a href="feature_descriptions.html">Feature Descriptions</a>
+                <a href="Predictions.html">Predictions</a>
+                <a class="active" href="#">Forecasting</a>
+                <a href="apidocs">API DOCS</a>
+
+        </div>
+
+
+
+
+        <div class="container">
+            <div class="dashboard">
+                <div class="dataset card">
+                    <h2>Predictions</h2>
+
+                    <!-- Page descriptor block -->
+                    <div class="dataset-intro">
+                        <p>
+                          Page for using our LightGBM forecasting models.
+                        </p>
+                        <p>
+                            Upload a CSV file in the form below and press the predict button to view the prediction. 
+                            The CSV file must be a 12 hour window of solar flare activity of 60 timesteps.
+                        </p>
+                        <p>The page outputs the predicted next timestep/12 minute time window.</p>
+                    </div>
+
+                    <form id="predictForm" class="predictForm" enctype="multipart/form-data">
+                        <label for="file">File:</label>
+                        <input type="file" id="file" name="file" accept=".csv" required><br />
+
+                        <button type="submit">Forecast</button>
+                    </form>
+              
+                    <div id="result"></div>
+
+                    <script>
+                        document.getElementById("predictForm").addEventListener("submit", async function(e) {
+                            e.preventDefault();
+
+                            const formData = new FormData(this);
+
+                            const response = await fetch("http://127.0.0.1:5000/forecast", {
+                                method: "POST",
+                                body: formData
+                            });
+
+                            const resultText = await response.text();
+
+                            const container = document.getElementById("result");
+                            container.innerHTML = resultText;
+                            container.querySelectorAll("script").forEach(script => {
+                                eval(script.innerText);
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

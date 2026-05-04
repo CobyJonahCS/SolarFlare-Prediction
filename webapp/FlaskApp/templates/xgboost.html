@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>XGBoost</title>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+
+
+    <body>
+        <div class="topnav">
+                <a href="/">Home</a>
+                <a class="active" href="#">XGBoost</a>
+                <a href="LSTM.html">LSTM</a>
+                <a href="minirocket.html">MiniRockets</a>
+                <a href="LightGBM.html">LightGBM Forecasters</a>
+                <a href="feature_descriptions.html">Feature Descriptions</a>
+                <a href="Predictions.html">Predictions</a>
+                <a href="forecasting.html">Forecasting</a>
+                <a href="apidocs">API DOCS</a>
+        </div>
+
+
+
+
+        <div class="container">
+            <div class="dashboard">
+                <div class="dataset card">
+                    <h2>XGBoost Model Performance</h2>
+
+                    <!-- Page descriptor block -->
+                    <div class="dataset-intro">
+                        <p>
+                          Performance metrics for the XGBoost model.
+                        </p>
+
+                        <p class="dataset-meta">
+                          Trained on partition 3 of 
+                          <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/EBCFKM"
+                          target="_blank" rel="noopener">
+                          SWAN-SF Dataset
+                        </a>.
+                        </p>
+                    </div>
+
+
+              
+                    <h2>Performance Metrics</h2>
+                    <div class="feature-table-wrap">
+                        <table class="feature-table">
+                        <thead>
+                          <tr>
+                            <th>Class</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1-Score</th>
+                            <th>Support</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>0</td>
+                            <td>0.93</td>
+                            <td>0.94</td>
+                            <td>0.93</td>
+                            <td>34762</td>
+                          </tr>
+                          <tr>
+                            <td>1</td>
+                            <td>0.70</td>
+                            <td>0.68</td>
+                            <td>0.69</td>
+                            <td>7748</td>
+                          </tr>
+                          <tr>
+                            <td>accuracy</td>
+                            <td></td>
+                            <td></td>
+                            <td>0.89</td>
+                            <td>42510</td>
+                          </tr>
+                          <tr>
+                            <td>macro avg</td>
+                            <td>0.82</td>
+                            <td>0.81</td>
+                            <td>0.81</td>
+                            <td>42510</td>
+                          </tr>
+                          <tr>
+                            <td>weighted avg</td>
+                            <td>0.89</td>
+                            <td>0.89</td>
+                            <td>0.89</td>
+                            <td>42510</td>
+                          </tr>
+                        </tbody>
+                        </table>
+                    </div>
+
+                    <div class="graph-row">
+
+                      <!-- Confusion Matrix -->
+                      <div class="graph-card">
+                        <iframe src="{{url_for('static', filename='graphs/xgboost_confusion_matrix.html')}}"
+                            scrolling="no">
+                        </iframe>
+                      </div>
+
+                      <!-- ROC Curve -->
+                      <div class="graph-card">
+                        <iframe src="{{url_for('static', filename='graphs/xgboost_roc_curve.html')}}"
+                            scrolling="no">
+                        </iframe>
+                      </div>
+
+                    </div>
+
+                    <h2>Feature Importance</h2>
+                    <div class="feature-table-wrap">
+                    <table class="feature-table">
+                      <thead>
+                        <tr>
+                          <th>Feature</th>
+                          <th>Description</th>
+                          <th>Importance</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>R_VALUE_Min</td><td>Minimum of Sum of flux near the polarity inversion line</td><td>0.246705</td></tr>
+                        <tr><td>TOTUSJH_last_value</td><td>Last value of Total unsigned current helicity</td><td>0.036854</td></tr>
+                        <tr><td>TOTUSJH_avg_abs_derivative_change</td><td>Average absolute derivative change of Total unsigned current helicity</td><td>0.034477</td></tr>
+                        <tr><td>TOTFZ_Min</td><td>Minimum of Sum of the z-component of the Lorentz force</td><td>0.032741</td></tr>
+                        <tr><td>SAVNCPP_Variance</td><td>Variance of Sum of the modulus of the net current per polarity</td><td>0.029301</td></tr>
+                        <tr><td>TOTUSJH_Max</td><td>Maximum of Total unsigned current helicity</td><td>0.027529</td></tr>
+                        <tr><td>TOTFZ_average_absolute_change</td><td>Average absolute change of Sum of the z-component of the Lorentz force</td><td>0.023672</td></tr>
+                        <tr><td>TOTPOT_Variance</td><td>Variance of Total photospheric magnetic free energy density</td><td>0.016928</td></tr>
+                        <tr><td>TOTFZ_last_value</td><td>Last value of Sum of the z-component of the Lorentz force</td><td>0.015021</td></tr>
+                        <tr><td>ABSNJZH_Min</td><td>Minimum of Absolute value of the net current helicity</td><td>0.012767</td></tr>
+                        <tr><td>SAVNCPP_average_absolute_change</td><td>Average absolute change of Sum of the modulus of the net current per polarity</td><td>0.009224</td></tr>
+                        <tr><td>ABSNJZH_average_absolute_change</td><td>Average absolute change of Absolute value of the net current helicity</td><td>0.007341</td></tr>
+                        <tr><td>TOTUSJH_Variance</td><td>Variance of Total unsigned current helicity</td><td>0.006138</td></tr>
+                        <tr><td>TOTPOT_Std_dev</td><td>Standard deviation of Total photospheric magnetic free energy density</td><td>0.006117</td></tr>
+                        <tr><td>R_VALUE_Variance</td><td>Variance of Sum of flux near the polarity inversion line</td><td>0.005935</td></tr>
+                        <tr><td>MEANPOT_Mean</td><td>Mean of Mean photospheric magnetic free energy</td><td>0.005934</td></tr>
+                        <tr><td>USFLUX_last_value</td><td>Last value of Total unsigned magnetic flux</td><td>0.005776</td></tr>
+                        <tr><td>TOTFZ_Variance</td><td>Variance of Sum of the z-component of the Lorentz force</td><td>0.005659</td></tr>
+                        <tr><td>TOTBSQ_Variance</td><td>Variance of Total magnitude of the Lorentz force</td><td>0.005604</td></tr>
+                        <tr><td>ABSNJZH_Variance</td><td>Variance of Absolute value of the net current helicity</td><td>0.005451</td></tr>
+                        <tr><td>MEANGBZ_Max</td><td>Maximum of Mean gradient of the vertical magnetic field</td><td>0.005047</td></tr>
+                        <tr><td>TOTUSJZ_last_value</td><td>Last value of Total unsigned vertical electric current</td><td>0.004965</td></tr>
+                      </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script src="{{url_for('static', filename='script.js')}}"></script>
+    </body>
+</html>

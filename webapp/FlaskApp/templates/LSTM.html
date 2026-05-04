@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>LSTM</title>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+
+
+    <body>
+        <div class="topnav">
+                <a href="/">Home</a>
+                <a href="xgboost.html">XGBoost</a>
+                <a class="active" href="#">LSTM</a>
+                <a href="minirocket.html">MiniRockets</a>
+                <a href="LightGBM.html">LightGBM Forecasters</a>
+                <a href="feature_descriptions.html">Feature Descriptions</a>
+                <a href="Predictions.html">Predictions</a>
+                <a href="forecasting.html">Forecasting</a>
+                <a href="apidocs">API DOCS</a>
+        </div>
+
+
+
+
+        <div class="container">
+            <div class="dashboard">
+                <div class="dataset card">
+                    <h2>LSTM Model Performance</h2>
+
+                    <!-- Page descriptor block -->
+                    <div class="dataset-intro">
+                        <p>
+                          Performance metrics for the LSTM model.
+                        </p>
+
+                        <p class="dataset-meta">
+                          Trained on partition 3 of 
+                          <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/EBCFKM"
+                          target="_blank" rel="noopener">
+                          SWAN-SF Dataset
+                        </a>.
+                        </p>
+                    </div>
+
+
+              
+                    <h2>Performance Metrics</h2>
+                    <div class="feature-table-wrap">
+                        <table class="feature-table">
+                        <thead>
+                          <tr>
+                            <th>Class</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1-Score</th>
+                            <th>Support</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>0</td>
+                            <td>0.96</td>
+                            <td>0.89</td>
+                            <td>0.92</td>
+                            <td>34762</td>
+                          </tr>
+                          <tr>
+                            <td>1</td>
+                            <td>0.63</td>
+                            <td>0.83</td>
+                            <td>0.72</td>
+                            <td>7748</td>
+                          </tr>
+                          <tr>
+                            <td>accuracy</td>
+                            <td></td>
+                            <td></td>
+                            <td>0.88</td>
+                            <td>42510</td>
+                          </tr>
+                          <tr>
+                            <td>macro avg</td>
+                            <td>0.80</td>
+                            <td>0.86</td>
+                            <td>0.82</td>
+                            <td>42510</td>
+                          </tr>
+                          <tr>
+                            <td>weighted avg</td>
+                            <td>0.90</td>
+                            <td>0.88</td>
+                            <td>0.89</td>
+                            <td>42510</td>
+                          </tr>
+                        </tbody>
+                        </table>
+                    </div>
+
+                    <div class="graph-row">
+
+                      <!-- Confusion Matrix -->
+                      <div class="graph-card">
+                        <iframe src="{{url_for('static', filename='graphs/lstm_confusion_matrix.html')}}"
+                            scrolling="no">
+                        </iframe>
+                      </div>
+
+                      <!-- ROC Curve -->
+                      <div class="graph-card">
+                        <iframe src="{{url_for('static', filename='graphs/lstm_roc_curve.html')}}"
+                            scrolling="no">
+                        </iframe>
+                      </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script src="{{url_for('static', filename='script.js')}}"></script>
+    </body>
+</html>
