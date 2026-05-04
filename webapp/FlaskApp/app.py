@@ -412,7 +412,7 @@ def LSTM():
 
 @app.route("/minirocket.html")
 def miniRocket():
-    return render_template("miniRocket.html")
+    return render_template("minirocket.html")
 
 @app.route("/Predictions.html")
 def predictionsPage():
